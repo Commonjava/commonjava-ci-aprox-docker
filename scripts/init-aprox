@@ -51,3 +51,5 @@ chcon -Rt svirt_sandbox_file_t $DATA
 chcon -Rt svirt_sandbox_file_t $STORAGE
 $INIT $URL $DEV -S $SSH --logs=$LOGS --data=$DATA --storage=$STORAGE $ETC --port=$PORT -q
 
+docker logs -f --tail=1 aprox
+
