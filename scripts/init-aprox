@@ -1,0 +1,33 @@
+#!/bin/bash
+
+INIT=/opt/aprox/aprox-docker/init-aprox-server-no-vols.py
+URL=''
+if [ "x${1}" != "x" ]; then
+  URL="--url=${1}"
+fi
+
+TO_DEPLOY=$(ls -1 /opt/aprox/to-deploy/*.tar.gz | tail -1)
+DEPLOYED=/opt/aprox/deployed
+
+DEV=''
+if [ "x${TO_DEPLOY}" != "x" ]; then
+  cp $TO_DEPLOY $DEPLOYED
+  DEV="--devdir=${DEPLOYED}"
+fi
+
+ETC_DIR=/opt/aprox/etc
+ETC_URL=https://github.com/Commonjava/commonjava-ci-aprox-etc.git
+
+ETC="-E ${ETC_URL}"
+if [ -f $ETC_DIR/main.conf ]; then
+  ETC="--config=${ETC_DIR}"
+fi
+
+SSH=/opt/aprox/ssh
+LOGS=/opt/aprox/logs
+DATA=/opt/aprox/data
+STORAGE=/opt/aprox/storage
+PORT=8180
+
+$INIT $URL $DEV -S $SSH --logs=$LOGS --data=$DATA --storage=$STORAGE $ETC --port=$PORT -q
+
