@@ -6,13 +6,17 @@ if [ "x${1}" != "x" ]; then
   URL="--url=${1}"
 fi
 
-TO_DEPLOY=$(ls -1 /opt/aprox/to-deploy/*.tar.gz | tail -1)
+TO_DEPLOY=$(ls -1 /opt/aprox/to-deploy/aprox-launcher-*-launcher.tar.gz | tail -1)
 DEPLOYED=/opt/aprox/deployed
 
 DEV=''
 if [ "x${TO_DEPLOY}" != "x" ]; then
+  set -x
+  chcon -Rt svirt_sandbox_file_t $DEPLOYED
+  rm -rf $DEPLOYED/*
   cp $TO_DEPLOY $DEPLOYED
   DEV="--devdir=${DEPLOYED}"
+  set +x
 fi
 
 ETC_DIR=/opt/aprox/etc
@@ -20,7 +24,10 @@ ETC_URL=https://github.com/Commonjava/commonjava-ci-aprox-etc.git
 
 ETC="-E ${ETC_URL}"
 if [ -f $ETC_DIR/main.conf ]; then
+  set -x
+  chcon -Rt svirt_sandbox_file_t $ETC_DIR
   ETC="--config=${ETC_DIR}"
+  set +x
 fi
 
 SSH=/opt/aprox/ssh
@@ -29,5 +36,10 @@ DATA=/opt/aprox/data
 STORAGE=/opt/aprox/storage
 PORT=8180
 
+set -x
+chcon -Rt svirt_sandbox_file_t $SSH
+chcon -Rt svirt_sandbox_file_t $LOGS
+chcon -Rt svirt_sandbox_file_t $DATA
+chcon -Rt svirt_sandbox_file_t $STORAGE
 $INIT $URL $DEV -S $SSH --logs=$LOGS --data=$DATA --storage=$STORAGE $ETC --port=$PORT -q
 
