@@ -1,5 +1,13 @@
 #!/bin/bash
 
+docker ps -a | grep aprox
+RET=$?
+if [ $RET == 0 ]; then
+    echo "Removing pre-exising aprox container."
+    docker stop aprox
+    docker rm aprox
+fi
+
 INIT=/opt/aprox/aprox-docker/init-aprox-server-no-vols.py
 URL=''
 if [ "x${1}" != "x" ]; then
