@@ -1,0 +1,6 @@
+#!/bin/bash
+
+URL=https://oss.sonatype.org/content/repositories/snapshots/org/commonjava/aprox/launch/aprox-launcher-savant/0.23.0-SNAPSHOT/maven-metadata.xml
+DIR=$(dirname $0)
+
+/opt/aprox/aprox-docker/autodeploy-url.py --url='${URL}' --image='docker.io/commonjava/aprox:dev' --versionfile=/opt/aprox/deployed.version $DIR/init-aprox {url}
