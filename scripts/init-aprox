@@ -1,12 +1,17 @@
 #!/bin/bash
 
-docker ps -a | grep aprox
+IMAGE=docker.io/commonjava/aprox:dev
+NAME=aprox
+
+docker ps -a | grep $NAME
 RET=$?
 if [ $RET == 0 ]; then
     echo "Removing pre-exising aprox container."
-    docker stop aprox
-    docker rm aprox
+    docker stop $NAME
+    docker rm $NAME
 fi
+
+docker pull $IMAGE
 
 INIT=/opt/aprox/aprox-docker/init-aprox-server-no-vols.py
 URL=''
@@ -49,7 +54,7 @@ chcon -Rt svirt_sandbox_file_t $SSH
 chcon -Rt svirt_sandbox_file_t $LOGS
 chcon -Rt svirt_sandbox_file_t $DATA
 chcon -Rt svirt_sandbox_file_t $STORAGE
-$INIT $URL $DEV -S $SSH --logs=$LOGS --data=$DATA --storage=$STORAGE $ETC --port=$PORT -q
+$INIT $URL $DEV --image=$IMAGE --name=$NAME -S $SSH --logs=$LOGS --data=$DATA --storage=$STORAGE $ETC --port=$PORT -q
 
-docker logs -f --tail=1 aprox
+docker logs -f --tail=1 $NAME
 
